@@ -1,5 +1,6 @@
 import asyncio
-
+from aiogram.dispatcher import FSMContext
+from states.personalData import PersonalData
 from aiogram import types
 
 from data.config import ADMINS
@@ -12,14 +13,17 @@ async def get_all_users(message: types.Message):
     await message.answer(users)
 
 @dp.message_handler(text="/reklama", user_id=ADMINS)
-async def send_ad_to_all(message: types.Message):
+async def rek(message:types.Message):
+    await PersonalData.reklama.set()
+@dp.message_handler(state=PersonalData.reklama, user_id=ADMINS)
+async def send_ad_to_all(message: types.Message,state=FSMContext):
     users = db.select_all_users()
     active = 0
-    unactive = 0
+    unactive = 0 
     for user in users:
         try:
             user_id = user[0]
-            await bot.send_message(chat_id=user_id, text="@SariqDev kanaliga obuna bo'ling!")
+            await bot.send_message(chat_id=user_id, text=types.message)
             active += 1
             await asyncio.sleep(0.05)
         except:
